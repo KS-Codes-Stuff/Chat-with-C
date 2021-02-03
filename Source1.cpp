@@ -15,6 +15,6 @@ if (client1 < 0)
 	//Fehlermeldung
 }
 
-struct sockaddr_in 
+struct sockaddr_in sockaddr;
 
 int connect (SOCKET client1, const struct sockaddr_in FAR* addr, sizeof(sockaddr_in));
