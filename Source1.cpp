@@ -1,5 +1,5 @@
 #include <winsock.h>
-#inlcude <netdb.h>
+#include <netdb.h>
 #include <netinet/in.h>
 
 char ip_addr;
@@ -8,7 +8,7 @@ scanf_s("%s", ipa_addr);
 
 SOCKET socket(int af, int type, int protocol);
 
-client1 = socket(AF_INET, SOCK_STREAM, 0);
+SOCKET client1 = socket(AF_INET, SOCK_STREAM, 0);
 if (client1 < 0)
 {
 	//Fehler beim erstellen des Sockets
