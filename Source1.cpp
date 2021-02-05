@@ -1,12 +1,14 @@
+#pragma comment( lib, "ws2_32.lib" )
 #include <iostream>
 #include <stdio.h>
 #include <winsock2.h>
 
 int main()
 {
-	/*char ip_addr;
+	char ip_addr[16];
 	printf("Bitte geben Sie die IP-Adresse ihres Chatpartners ein: \n");
-	scanf_s("%s", ip_addr);*/
+	scanf_s("%s", ip_addr, 16);
+	printf("Ip: %s\n", ip_addr);
 
 	WORD wVersionRequested = MAKEWORD(2, 2);
 	WSADATA wsaData;
@@ -14,25 +16,21 @@ int main()
 	if (err != 0)
 	{
 		printf("WSAStartup failed, could not find an usable Winsock\n");
-		return 1;
 	}
 
 	if (LOBYTE(wsaData.wVersion) != 2 || HIBYTE(wsaData.wVersion) != 2)
 	{                             
 		printf("Could not find a usable version of Winsock.dll\n");
 		WSACleanup();
-		return 1;
 	}
 	else
 	{
 	    printf("The Winsock 2.2 dll was found okay\n");
 	}
-		
 
 	SOCKET client1 = socket(AF_INET, SOCK_STREAM, 0);
 	if (client1 == INVALID_SOCKET)
 	{
-		//Fehler beim erstellen des Sockets
 		printf("Socket could not be created. Error-Code: %d\n", WSAGetLastError());
 	}
 	else
@@ -53,11 +51,9 @@ int main()
 		//Verbindungsfehler
 	} */
 
-
-
-
-
+	Sleep(3000);
 	//WENN FERTIG MIT WINSOCK:
+	//closesocket(client1);
 	WSACleanup(); 
 }
 
