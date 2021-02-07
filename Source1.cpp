@@ -48,7 +48,7 @@ int main()
 	SOCKADDR_IN client2;																
 																												
 	client2.sin_family = AF_INET;																				//Socketfamilie
-	client2.sin_port = htons(12345);																			//Port -> BEISPIELPORT ZUM TESTEN, MUSS NOCH EINGEBBAR GEMACHT WERDEN!!!!
+	client2.sin_port = htons((u_short) port_addr);																//Port
 	client2.sin_addr.s_addr = inet_addr(ip_addr);																//IP-Adresse
 
 
