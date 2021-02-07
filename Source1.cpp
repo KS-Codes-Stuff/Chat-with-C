@@ -3,19 +3,37 @@
 #include <stdio.h>
 #include <winsock2.h>
 #include <ctype.h>
+#include <stdlib.h>
 
 int main()
 {																												
 	char ip_addr[16];																							
-	printf("Bitte geben Sie die IP-Adresse ihres Chatpartners ein: \n");                                        //Abfrage, falls IP zu lang ist? Sonst evtl Fehler bei client2
-	scanf_s("%s", ip_addr, 16);	
+	//printf("Bitte geben Sie die IP-Adresse ihres Chatpartners ein: \n");                                        //Abfrage, falls IP zu lang ist? Sonst evtl Fehler bei client2
+	//fgets(ip_addr, 16, stdin);	
 		
-	int port_addr[5];
-	printf("Bitte geben Sie den Port ein, \x81 \bber den Sie chatten wollen: \n");	
-	if (scanf_s("%d", port_addr) == 0)
+	char port_addr[5];
+	int validInput = 0;
+	printf("Bitte geben Sie den Port ein, \x81 \bber den Sie chatten wollen: \n");
+	fgets(port_addr, 5, stdin);
+	while (validInput == 0)
 	{
-		printf("Bitte validen Wert eingeben!\n");
+		if (isdigit(port_addr[0]))
+		{
+			for (int i = 1; i < 5; i++)
+			{
+				if (!(isdigit(port_addr[i])) || !(port_addr[i] == NULL))
+				{
+					
+				}
+			}
+		}
+		else
+		{
+			printf("Bitte geben Sie einen validen Wert ein: \n");
+			fgets(port_addr, 5, stdin);
+		}
 	}
+
 																																																							
 	WORD wVersionRequested = MAKEWORD(2, 2);																	
 	WSADATA wsaData;																							
