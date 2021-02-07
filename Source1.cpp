@@ -13,26 +13,35 @@ int main()
 		
 	char port_addr[5];
 	int validInput = 0;
+	int errorcount = 0;
 	printf("Bitte geben Sie den Port ein, \x81 \bber den Sie chatten wollen: \n");
-	fgets(port_addr, 5, stdin);
-	while (validInput == 0)
+	do
 	{
+		fgets(port_addr, 5, stdin);																				 //Fordert iwie keine neue Eingabe an?!
 		if (isdigit(port_addr[0]))
 		{
 			for (int i = 1; i < 5; i++)
 			{
-				if (!(isdigit(port_addr[i])) || !(port_addr[i] == NULL))
+				if (!(isdigit(port_addr[i])))
 				{
-					
+					errorcount++;
 				}
 			}
 		}
 		else
 		{
 			printf("Bitte geben Sie einen validen Wert ein: \n");
-			fgets(port_addr, 5, stdin);
 		}
-	}
+		if (errorcount > 0)
+		{
+			printf("Bitte geben Sie einen validen Wert ein: \n");
+			errorcount = 0;
+		}
+		else
+		{
+			validInput = 1;
+		}
+	} while (validInput == 0);
 
 																																																							
 	WORD wVersionRequested = MAKEWORD(2, 2);																	
