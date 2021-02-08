@@ -6,13 +6,14 @@
 #include <stdlib.h>
 
 int main()
-{																												
+{	
+	//--------------------Einlesen von IP, Port und Socketmodus--------------------
 	char ip_addr[16];																							
 	//printf("Bitte geben Sie die IP-Adresse ihres Chatpartners ein: \n");                                        //Abfrage, falls IP zu lang ist? Sonst evtl Fehler bei client2
 	//fgets(ip_addr, 16, stdin);	
 		
 	char port_addr[5];
-	int validInput = 0;
+	/*int validInput = 0;
 	int errorcount = 0;
 	printf("Bitte geben Sie den Port ein, \x81 \bber den Sie chatten wollen: \n");
 	do
@@ -42,7 +43,8 @@ int main()
 		{
 			validInput = 1;
 		}
-	} while (validInput == 0);
+	} while (validInput == 0); */
+
 
 	/* ALTERNATIVE ZU DEM OBEN, OHNE FIX FÜR NEUE EINGABE :/
 	char input[5];
@@ -58,10 +60,13 @@ int main()
 	   printf("Bitte geben Sie einen validen Wert ein: \n");
 	   fgets(input, 5, stdin);
 	}
-	
 	*/
 
-																																																							
+	char mode[2];
+	printf("Wenn Sie eine Verbindung zu einem Chatpartner herstellen wollen, dr\x81 \bcken Sie die 1.\n Wenn sie warten m\x94 \bchten, bis ihr Chatpartner eine Verbindung zu Ihnen herstellt, dr\x81 \bcken Sie die 2.\n");
+	fgets(mode, 2, stdin);
+
+	//--------------------Socket erstellen--------------------																																																						
 	WORD wVersionRequested = MAKEWORD(2, 2);																	
 	WSADATA wsaData;																							
 	int err = WSAStartup(wVersionRequested, &wsaData);															
@@ -89,31 +94,53 @@ int main()
 	{																											
 		printf("Socket created!\n");
 	}
-																												
-	SOCKADDR_IN client2;																
-																												
+
+	//NOCHMAL NACHLESES WAS DES MACHT ZUM RICHTIG EINORDNEN
+	SOCKADDR_IN client2;
+
 	client2.sin_family = AF_INET;																				//Socketfamilie
-	client2.sin_port = htons((u_short) port_addr);																//Port
+	client2.sin_port = htons((u_short)port_addr);																//Port
 	client2.sin_addr.s_addr = inet_addr(ip_addr);																//IP-Adresse
-
-
-
-	memset(&client2, 0, sizeof(SOCKADDR_IN));																	//Sets the first num bytes of the block of memory pointed by ptr to 0 -> siehe cplusplus
-
-	long rc = connect (client1, (SOCKADDR*)&client2, sizeof(sockaddr_in));
-
-	if (rc==SOCKET_ERROR)
+		
+	//--------------------Socket connecten--------------------
+	if (mode[0] == '1')
 	{
-		printf("Connection failed. Errorcode: %d\n", WSAGetLastError());
-	} 
-	else
-	{
-		printf("Connected with %s\n", ip_addr);
+		memset(&client2, 0, sizeof(SOCKADDR_IN));																	//Sets the first num bytes of the block of memory pointed by ptr to 0 -> siehe cplusplus
+
+		long connection = connect(client1, (SOCKADDR*)&client2, sizeof(sockaddr_in));
+
+		if (connection == SOCKET_ERROR)
+		{
+			printf("Connection failed. Errorcode: %d\n", WSAGetLastError());
+		}
+		else
+		{
+			printf("Connected with %s\n", ip_addr);
+		}
 	}
 
-	Sleep(3000);
+	//--------------------Socket wartet auf connection--------------------
+	if (mode[0] == '2')
+	{
+		long listening = listen(client1, 10);
 
-	//WENN FERTIG MIT WINSOCK:
+		if (listening == SOCKET_ERROR)
+		{
+			printf("Could not put Socket in listening Mode. Errorcode: %d\n", WSAGetLastError());				//Socket geht noch nich in Listening -> Warum???
+		}
+		else
+		{
+			printf("Socket is now in listenig mode an waits for a connection. \n");
+		}
+	}
+
+	//accept() noch programmieren, erst dann kann Verbindung entstehen.
+	
+
+	//--------------------Wait, damit Ausgabe sichtbar--------------------
+	Sleep(5000);
+
+	//--------------------Beenden des Sockets--------------------
 	closesocket(client1);
 	WSACleanup(); 
 }
