@@ -31,6 +31,7 @@ int main()
 		else
 		{
 			printf("Bitte geben Sie einen validen Wert ein: \n");
+			errorcount++;
 		}
 		if (errorcount > 0)
 		{
@@ -42,6 +43,23 @@ int main()
 			validInput = 1;
 		}
 	} while (validInput == 0);
+
+	/* ALTERNATIVE ZU DEM OBEN, OHNE FIX FÜR NEUE EINGABE :/
+	char input[5];
+	char * wrongInputStuff;	
+	long port_addr;
+
+	fgets(input, 5, stdin);
+
+	port_addr = strtol(input,&wrongInputStuff,10);
+
+	if (port_addr == NULL)
+	{
+	   printf("Bitte geben Sie einen validen Wert ein: \n");
+	   fgets(input, 5, stdin);
+	}
+	
+	*/
 
 																																																							
 	WORD wVersionRequested = MAKEWORD(2, 2);																	
