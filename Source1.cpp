@@ -7,7 +7,7 @@
 
 int main()
 {	
-	//--------------------Einlesen von IP, Port und Socketmodus--------------------
+	//--------------------Einlesen von IP, Port und Socketmodus--------------------								  !!!!!!CHECKEN WEGEN PORTS -> muss der Port vom Chatpartner eingegeben werden?
 	char ip_addr[16];																							
 	//printf("Bitte geben Sie die IP-Adresse ihres Chatpartners ein: \n");                                        //Abfrage, falls IP zu lang ist? Sonst evtl Fehler bei client2
 	//fgets(ip_addr, 16, stdin);	
@@ -94,17 +94,16 @@ int main()
 	{																											
 		printf("Socket created!\n");
 	}
-
-	//NOCHMAL NACHLESES WAS DES MACHT ZUM RICHTIG EINORDNEN
-	SOCKADDR_IN client2;
-
-	client2.sin_family = AF_INET;																				//Socketfamilie
-	client2.sin_port = htons((u_short)port_addr);																//Port
-	client2.sin_addr.s_addr = inet_addr(ip_addr);																//IP-Adresse
 		
 	//--------------------Socket connecten--------------------
 	if (mode[0] == '1')
 	{
+		SOCKADDR_IN client2;																						//Speicher für Infos für Zielclient 
+
+		client2.sin_family = AF_INET;																				//Socketfamilie
+		client2.sin_port = htons((u_short)port_addr);																//Port
+		client2.sin_addr.s_addr = inet_addr(ip_addr);																//IP-Adresse
+
 		memset(&client2, 0, sizeof(SOCKADDR_IN));																	//Sets the first num bytes of the block of memory pointed by ptr to 0 -> siehe cplusplus
 
 		long connection = connect(client1, (SOCKADDR*)&client2, sizeof(sockaddr_in));
@@ -122,25 +121,50 @@ int main()
 	//--------------------Socket wartet auf connection--------------------
 	if (mode[0] == '2')
 	{
-		long listening = listen(client1, 10);
+		SOCKADDR_IN me;
 
-		if (listening == SOCKET_ERROR)
+		me.sin_family = AF_INET;
+		me.sin_port = htons(12345);																					//Porteingabe: (u_short)port_addr -> Im Moment Port zum testen drinne
+		me.sin_addr.s_addr = ADDR_ANY;
+
+		long binding = bind(client1, (SOCKADDR*)&me, sizeof(SOCKADDR_IN));
+
+		if (binding != 0)
 		{
-			printf("Could not put Socket in listening Mode. Errorcode: %d\n", WSAGetLastError());				//Socket geht noch nich in Listening -> Warum???
+			printf("An Error occured, when trying to bind the Socket. Errorcode: %d\n", WSAGetLastError());
 		}
 		else
 		{
-			printf("Socket is now in listenig mode an waits for a connection. \n");
+			long listening = listen(client1, 10);
+
+			if (listening == SOCKET_ERROR)
+			{
+				printf("Could not put Socket in listening Mode. Errorcode: %d\n", WSAGetLastError());				//Socket geht noch nich in Listening -> Warum??? -> Evtl gelöst, noch nich getestet.
+			}
+			else
+			{
+				printf("Socket is now in listenig mode an waits for a connection. \n");
+			}
+		}
+
+		SOCKET enableConnection = accept(client1, NULL, NULL);
+		if (enableConnection == INVALID_SOCKET)
+		{
+			printf("Socket could not accept a connection. Errorcode: %d\n", WSAGetLastError());
+		}
+		else
+		{
+			printf("New Connection accepted!");
 		}
 	}
 
-	//accept() noch programmieren, erst dann kann Verbindung entstehen.
+	
 	
 
 	//--------------------Wait, damit Ausgabe sichtbar--------------------
 	Sleep(5000);
 
-	//--------------------Beenden des Sockets--------------------
+	//--------------------Beenden der Sockets--------------------
 	closesocket(client1);
 	WSACleanup(); 
 }
