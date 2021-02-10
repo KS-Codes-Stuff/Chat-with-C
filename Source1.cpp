@@ -7,63 +7,54 @@
 
 int main()
 {	
-	//--------------------Einlesen von IP, Port und Socketmodus--------------------								  !!!!!!CHECKEN WEGEN PORTS -> muss der Port vom Chatpartner eingegeben werden?
+	//--------------------Einlesen von IP, Port und Socketmodus--------------------								  
 	char ip_addr[16];																							
 	//printf("Bitte geben Sie die IP-Adresse ihres Chatpartners ein: \n");                                        //Abfrage, falls IP zu lang ist? Sonst evtl Fehler bei client2
 	//fgets(ip_addr, 16, stdin);	
 		
 	char port_addr[5];
-	/*int validInput = 0;
+	int validInput = 0;
 	int errorcount = 0;
 	printf("Bitte geben Sie den Port ein, \x81 \bber den Sie chatten wollen: \n");
 	do
 	{
-		fgets(port_addr, 5, stdin);																				 //Fordert iwie keine neue Eingabe an?!
+		fgets(port_addr, 5, stdin);																				 //Jz wird ne neue Eingabe gefordert?!
 		if (isdigit(port_addr[0]))
 		{
 			for (int i = 1; i < 5; i++)
 			{
-				if (!(isdigit(port_addr[i])))
+				if (!(isdigit(port_addr[i])))																	 
 				{
-					errorcount++;
+					if (port_addr[i] != '\n')
+					{
+						errorcount++;
+					}
+					else
+					{
+						break;
+					}
+					
 				}
 			}
 		}
 		else
 		{
-			printf("Bitte geben Sie einen validen Wert ein: \n");
 			errorcount++;
 		}
-		if (errorcount > 0)
+		if (errorcount == 0)
+		{
+			validInput = 1;
+			
+		}
+		else
 		{
 			printf("Bitte geben Sie einen validen Wert ein: \n");
 			errorcount = 0;
 		}
-		else
-		{
-			validInput = 1;
-		}
-	} while (validInput == 0); */
-
-
-	/* ALTERNATIVE ZU DEM OBEN, OHNE FIX FÜR NEUE EINGABE :/
-	char input[5];
-	char * wrongInputStuff;	
-	long port_addr;
-
-	fgets(input, 5, stdin);
-
-	port_addr = strtol(input,&wrongInputStuff,10);
-
-	if (port_addr == NULL)
-	{
-	   printf("Bitte geben Sie einen validen Wert ein: \n");
-	   fgets(input, 5, stdin);
-	}
-	*/
+	} while (validInput == 0);
 
 	char mode[2];
-	printf("Wenn Sie eine Verbindung zu einem Chatpartner herstellen wollen, dr\x81 \bcken Sie die 1.\n Wenn sie warten m\x94 \bchten, bis ihr Chatpartner eine Verbindung zu Ihnen herstellt, dr\x81 \bcken Sie die 2.\n");
+	printf("Wenn Sie eine Verbindung zu einem Chatpartner herstellen wollen, dr\x81 \bcken Sie die 1.\nWenn sie warten m\x94 \bchten, bis ihr Chatpartner eine Verbindung zu Ihnen herstellt, dr\x81 \bcken Sie die 2.\n");
 	fgets(mode, 2, stdin);
 
 	//--------------------Socket erstellen--------------------																																																						
@@ -72,7 +63,8 @@ int main()
 	int err = WSAStartup(wVersionRequested, &wsaData);															
 	if (err != 0)																									
 	{																											
-		printf("WSAStartup failed, could not find an usable Winsock\n");										
+		printf("WSAStartup failed, could not find an usable Winsock\n");
+		WSACleanup();
 	}																											
 																												
 	if (LOBYTE(wsaData.wVersion) != 2 || HIBYTE(wsaData.wVersion) != 2)											
@@ -88,7 +80,9 @@ int main()
 	SOCKET client1 = socket(AF_INET, SOCK_STREAM, 0);
 	if (client1 == INVALID_SOCKET)																				
 	{
-		printf("Socket could not be created. Error-Code: %d\n", WSAGetLastError());								
+		printf("Socket could not be created. Error-Code: %d\n", WSAGetLastError());
+		closesocket(client1);
+		WSACleanup();
 	}
 	else
 	{																											
@@ -111,6 +105,8 @@ int main()
 		if (connection == SOCKET_ERROR)
 		{
 			printf("Connection failed. Errorcode: %d\n", WSAGetLastError());
+			closesocket(client1);
+			WSACleanup();
 		}
 		else
 		{
@@ -132,6 +128,8 @@ int main()
 		if (binding != 0)
 		{
 			printf("An Error occured, when trying to bind the Socket. Errorcode: %d\n", WSAGetLastError());
+			closesocket(client1);
+			WSACleanup();
 		}
 		else
 		{
@@ -139,7 +137,9 @@ int main()
 
 			if (listening == SOCKET_ERROR)
 			{
-				printf("Could not put Socket in listening Mode. Errorcode: %d\n", WSAGetLastError());				//Socket geht noch nich in Listening -> Warum??? -> Evtl gelöst, noch nich getestet.
+				printf("Could not put Socket in listening Mode. Errorcode: %d\n", WSAGetLastError());	
+				closesocket(client1);
+				WSACleanup();
 			}
 			else
 			{
@@ -151,6 +151,8 @@ int main()
 		if (enableConnection == INVALID_SOCKET)
 		{
 			printf("Socket could not accept a connection. Errorcode: %d\n", WSAGetLastError());
+			closesocket(client1);
+			WSACleanup();
 		}
 		else
 		{
@@ -158,8 +160,6 @@ int main()
 		}
 	}
 
-	
-	
 
 	//--------------------Wait, damit Ausgabe sichtbar--------------------
 	Sleep(5000);
