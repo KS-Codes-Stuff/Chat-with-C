@@ -9,13 +9,14 @@ int main()
 {	
 	//--------------------Einlesen von IP, Port und Socketmodus--------------------								  
 	char ip_addr[16];																							
-	//printf("Bitte geben Sie die IP-Adresse ihres Chatpartners ein: \n");                                        //Abfrage, falls IP zu lang ist? Sonst evtl Fehler bei client2
+	//printf("Bitte geben Sie die IP-Adresse ihres Chatpartners ein: \n");                                        
 	//fgets(ip_addr, 16, stdin);	
 		
 	char port_addr[5];
 	int validInput = 0;
 	int errorcount = 0;
 	printf("Bitte geben Sie den Port ein, \x81 \bber den Sie chatten wollen: \n");
+	printf("Hinweis: Es werden nur die ersten vier Stellen beachtet!\n");
 	do
 	{
 		fgets(port_addr, 5, stdin);																				 
@@ -25,13 +26,13 @@ int main()
 			{
 				if (!(isdigit(port_addr[i])))																	 
 				{
-					if ((port_addr[i] != '\n') || (port_addr[i] != '\0'))
+					if ((port_addr[i] == '\n') || (port_addr[i] == '\0'))
 					{
-						errorcount++;
+						break;
 					}
 					else
 					{
-						break;
+						errorcount++; 
 					}
 					
 				}
@@ -49,13 +50,13 @@ int main()
 		else
 		{
 			printf("Bitte geben Sie einen validen Wert ein: \n");
-			while ((port_addr[4] = getchar()) != '\n');
 			errorcount = 0;
 		}
 	} while (validInput == 0);
 
 	char mode[2];
-	printf("Wenn Sie eine Verbindung zu einem Chatpartner herstellen wollen, dr\x81 \bcken Sie die 1.\nWenn sie warten m\x94 \bchten, bis ihr Chatpartner eine Verbindung zu Ihnen herstellt, dr\x81 \bcken Sie die 2.\n");
+	printf("Wenn Sie eine Verbindung zu einem Chatpartner herstellen wollen, dr\x81 \bcken Sie die 1.\n");
+	printf("Wenn sie warten m\x94 \bchten, bis ihr Chatpartner eine Verbindung zu Ihnen herstellt, dr\x81 \bcken Sie die 2.\n");
 	fgets(mode, 2, stdin);
 
 	//--------------------Socket erstellen--------------------																																																						
@@ -121,7 +122,7 @@ int main()
 		SOCKADDR_IN me;
 
 		me.sin_family = AF_INET;
-		me.sin_port = htons(12345);																					//Porteingabe: (u_short)port_addr -> Im Moment Port zum testen drinne
+		me.sin_port = htons((u_short)port_addr);																					
 		me.sin_addr.s_addr = ADDR_ANY;
 
 		long binding = bind(client1, (SOCKADDR*)&me, sizeof(SOCKADDR_IN));
