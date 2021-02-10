@@ -18,14 +18,14 @@ int main()
 	printf("Bitte geben Sie den Port ein, \x81 \bber den Sie chatten wollen: \n");
 	do
 	{
-		fgets(port_addr, 5, stdin);																				 //Jz wird ne neue Eingabe gefordert?!
+		fgets(port_addr, 5, stdin);																				 
 		if (isdigit(port_addr[0]))
 		{
 			for (int i = 1; i < 5; i++)
 			{
 				if (!(isdigit(port_addr[i])))																	 
 				{
-					if (port_addr[i] != '\n')
+					if ((port_addr[i] != '\n') || (port_addr[i] != '\0'))
 					{
 						errorcount++;
 					}
@@ -49,6 +49,7 @@ int main()
 		else
 		{
 			printf("Bitte geben Sie einen validen Wert ein: \n");
+			while ((port_addr[4] = getchar()) != '\n');
 			errorcount = 0;
 		}
 	} while (validInput == 0);
