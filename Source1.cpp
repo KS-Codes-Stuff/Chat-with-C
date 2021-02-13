@@ -5,6 +5,9 @@
 #include <ctype.h>
 #include <stdlib.h>
 
+void sendThenRecieve(SOCKET s);
+void recieveThenSend(SOCKET s);
+
 int main()
 {	
 	//--------------------Einlesen von IP, Port und Socketmodus--------------------								  
@@ -13,7 +16,7 @@ int main()
 	//fgets(ip_addr, 16, stdin);	
 		
 	char port_addr[5];
-	int validInput = 0;
+	/*int validInput = 0;
 	int errorcount = 0;
 	printf("Bitte geben Sie den Port ein, \x81 \bber den Sie chatten wollen: \n");
 	printf("Hinweis: Es werden nur die ersten vier Stellen beachtet!\n");
@@ -52,7 +55,7 @@ int main()
 			printf("Bitte geben Sie einen validen Wert ein: \n");
 			errorcount = 0;
 		}
-	} while (validInput == 0);
+	} while (validInput == 0); */
 
 	char mode[2];
 	printf("Wenn Sie eine Verbindung zu einem Chatpartner herstellen wollen, dr\x81 \bcken Sie die 1.\n");
@@ -113,6 +116,7 @@ int main()
 		else
 		{
 			printf("Connected with %s\n", ip_addr);
+			sendThenRecieve(client1);
 		}
 	}
 
@@ -159,6 +163,7 @@ int main()
 		else
 		{
 			printf("New Connection accepted!");
+			recieveThenSend(client1);
 		}
 	}
 
@@ -169,5 +174,40 @@ int main()
 	//--------------------Beenden der Sockets--------------------
 	closesocket(client1);
 	WSACleanup(); 
+}
+
+	//------------------------------------------------------------------------------Eleganter lösen!!!!------------------------------------------------------------------------------------------
+void sendThenRecieve(SOCKET s)
+{
+	do
+	{
+		//--------------------Senden von Nachrichten--------------------
+		char messageInput[100];																							//Überlegen wie groß die Eingabe sein darf, bezüglich Speicher
+		fgets(messageInput, 100, stdin);
+		send(s, messageInput, sizeof(messageInput), 0);
+
+		//--------------------Empfangen von Nachrichten--------------------
+		char recievedMessage[100];																						//Selbes Thema
+		recv(s, recievedMessage, sizeof(recievedMessage), 0);
+		printf("%s\n", recievedMessage);
+	} while (true);
+	
+}
+
+void recieveThenSend(SOCKET s)
+{
+	do
+	{
+		//--------------------Empfangen von Nachrichten--------------------
+		char recievedMessage[100];																						//Selbes Thema
+		recv(s, recievedMessage, sizeof(recievedMessage), 0);
+		printf("%s\n", recievedMessage);
+
+		//--------------------Senden von Nachrichten--------------------
+		char messageInput[100];																							//Überlegen wie groß die Eingabe sein darf, bezüglich Speicher
+		fgets(messageInput, 100, stdin);
+		send(s, messageInput, sizeof(messageInput), 0);
+	} while (true);
+
 }
 
