@@ -5,15 +5,16 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-void sendThenRecieve(SOCKET s);
-void recieveThenSend(SOCKET s);
+//void sendThenRecieve(SOCKET s);
+//void recieveThenSend(SOCKET s);
+void messaging(SOCKET s, int mode);
 
 int main()
 {	
 	//--------------------Einlesen von IP, Port und Socketmodus--------------------								  
-	char ip_addr[16];																							
-	//printf("Bitte geben Sie die IP-Adresse ihres Chatpartners ein: \n");                                        
-	//fgets(ip_addr, 16, stdin);	
+	char ip_addr[16];
+	printf("Bitte geben Sie die IP-Adresse ihres Chatpartners ein: \n");                                        
+	fgets(ip_addr, 16, stdin);	
 		
 	char port_addr[5];
 	/*int validInput = 0;
@@ -102,7 +103,7 @@ int main()
 		memset(&client2, 0, sizeof(SOCKADDR_IN));																	//Sets the first num bytes of the block of memory pointed by ptr to 0 -> siehe cplusplus
 
 		client2.sin_family = AF_INET;																				//Socketfamilie
-		client2.sin_port = htons((u_short)port_addr);																//Port 
+		client2.sin_port = htons(1234);																				//Port  (u_short)port_addr
 		client2.sin_addr.s_addr = inet_addr(ip_addr);																//IP-Adresse
 															
 
@@ -117,7 +118,8 @@ int main()
 		else
 		{
 			printf("Connected with %s\n", ip_addr);
-			sendThenRecieve(client1);
+			//sendThenRecieve(client1);
+			messaging(client1, 1);
 		}
 	}
 
@@ -129,7 +131,7 @@ int main()
 		memset(&me, 0, sizeof(SOCKADDR_IN));
 
 		me.sin_family = AF_INET;
-		me.sin_port = htons((u_short)port_addr);
+		me.sin_port = htons(1234);
 		me.sin_addr.s_addr = ADDR_ANY;
 
 		long binding = bind(client1, (SOCKADDR*)&me, sizeof(SOCKADDR_IN));
@@ -166,7 +168,8 @@ int main()
 		else
 		{
 			printf("New Connection accepted!");
-			recieveThenSend(client1);
+			//recieveThenSend(client1);
+			messaging(client1, 2);
 		}
 	}
 
@@ -177,41 +180,83 @@ int main()
 	//--------------------Beenden der Sockets--------------------
 	closesocket(client1);
 	WSACleanup(); 
+	return 1;
 }
 
 	//------------------------------------------------------------------------------Eleganter lösen!!!!------------------------------------------------------------------------------------------
-void sendThenRecieve(SOCKET s)
+/*void sendThenRecieve(SOCKET s)
 {
-	do
+	char messageInput[500];	
+	char recievedMessage[500];		
+	int end = 0;
+	
+	while (end != 1)
 	{
 		//--------------------Senden von Nachrichten--------------------
 		printf("Geben Sie die Nachricht ein, die Sie versenden wollen: \n");
-		char messageInput[100];																							//Überlegen wie groß die Eingabe sein darf, bezüglich Speicher
-		fgets(messageInput, 100, stdin);
+		fgets(messageInput, 500, stdin);
 		send(s, messageInput, sizeof(messageInput), 0);
 
+		if (messageInput[0] == 'b')
+		{
+			end = 1;
+		}
+
 		//--------------------Empfangen von Nachrichten--------------------
-		char recievedMessage[100];																						//Selbes Thema
 		recv(s, recievedMessage, sizeof(recievedMessage), 0);
-		printf("%s\n", recievedMessage);
-	} while (true);
-	
+		printf("%s\n", recievedMessage);  
+	}
 }
 
 void recieveThenSend(SOCKET s)
 {
-	do
+	char recievedMessage[500];
+	char messageInput[500];
+	int end = 0;
+
+	while (end != 1)
 	{
 		//--------------------Empfangen von Nachrichten--------------------
-		char recievedMessage[100];																						//Selbes Thema
 		recv(s, recievedMessage, sizeof(recievedMessage), 0);
 		printf("%s\n", recievedMessage);
 
-		//--------------------Senden von Nachrichten--------------------
-		char messageInput[100];																							//Überlegen wie groß die Eingabe sein darf, bezüglich Speicher
-		fgets(messageInput, 100, stdin);
+		//--------------------Senden von Nachrichten--------------------																						
+		fgets(messageInput, 500, stdin);
 		send(s, messageInput, sizeof(messageInput), 0);
-	} while (true);
 
+		if (messageInput[0] == 'b')
+		{
+			end = 1;
+		}
+	}	
+}*/
+
+void messaging(SOCKET s, int mode)
+{
+	char bufOutput[500];
+	char bufInput[500];
+	int end = 0;
+	while (end == 0)
+	{
+		if (mode == 1)
+		{
+			printf("Geben Sie die Nachricht ein, die Sie senden wollen: \n");
+			fgets(bufOutput, 500, stdin);
+			if (bufOutput[0] == 'b')
+			{
+				end = 1;
+			}
+			send(s, bufOutput, sizeof(bufOutput), 0);
+			mode = 2;
+		}
+
+		if (mode == 2)
+		{
+			printf("Ihr Chatpartner hat Ihnen folgende Nachricht geschickt: \n");
+			recv(s, bufInput, sizeof(bufInput), 0);
+			printf("%s \n", bufInput);
+			mode = 1;
+		}
+	}
+	
 }
-
