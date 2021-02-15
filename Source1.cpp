@@ -99,11 +99,12 @@ int main()
 	{
 		SOCKADDR_IN client2;																						//Speicher für Infos für Zielclient 
 
-		client2.sin_family = AF_INET;																				//Socketfamilie
-		client2.sin_port = htons((u_short)port_addr);																//Port
-		client2.sin_addr.s_addr = inet_addr(ip_addr);																//IP-Adresse
-
 		memset(&client2, 0, sizeof(SOCKADDR_IN));																	//Sets the first num bytes of the block of memory pointed by ptr to 0 -> siehe cplusplus
+
+		client2.sin_family = AF_INET;																				//Socketfamilie
+		client2.sin_port = htons((u_short)port_addr);																//Port 
+		client2.sin_addr.s_addr = inet_addr(ip_addr);																//IP-Adresse
+															
 
 		long connection = connect(client1, (SOCKADDR*)&client2, sizeof(sockaddr_in));
 
@@ -125,8 +126,10 @@ int main()
 	{
 		SOCKADDR_IN me;
 
+		memset(&me, 0, sizeof(SOCKADDR_IN));
+
 		me.sin_family = AF_INET;
-		me.sin_port = htons((u_short)port_addr);																					
+		me.sin_port = htons((u_short)port_addr);
 		me.sin_addr.s_addr = ADDR_ANY;
 
 		long binding = bind(client1, (SOCKADDR*)&me, sizeof(SOCKADDR_IN));
@@ -182,6 +185,7 @@ void sendThenRecieve(SOCKET s)
 	do
 	{
 		//--------------------Senden von Nachrichten--------------------
+		printf("Geben Sie die Nachricht ein, die Sie versenden wollen: \n");
 		char messageInput[100];																							//Überlegen wie groß die Eingabe sein darf, bezüglich Speicher
 		fgets(messageInput, 100, stdin);
 		send(s, messageInput, sizeof(messageInput), 0);
