@@ -6,67 +6,21 @@
 #include <stdlib.h>
 
 void messaging(SOCKET s, int mode);
+int isNumber(char* str);
+int getValidInput(int validationMode, int *inputAddress);
 
 int main()
 {	
+	char ip_addr;
+	int* pointer = &ip_addr;
 	//--------------------Einlesen von IP, Port und Socketmodus--------------------								  
-	char ip_addr[16];
-	printf("Bitte geben Sie die IP-Adresse ihres Chatpartners ein: \n");                                        
-	fgets(ip_addr, 16, stdin);	
+	getValidInput(1, pointer);
 		
 	char port_addr[5];
-	int validInput = 0;
-	int errorcount = 0;
 	printf("Bitte geben Sie den Port ein, \x81 \bber den Sie chatten wollen: \n");
 	printf("Hinweis: Es werden nur die ersten vier Stellen beachtet!\n");
-	while (validInput == 0);
-	{
-		fgets(port_addr, 5, stdin);																				 
-		if (isdigit(port_addr[0]))
-		{
-			for (int i = 1; i < 5; i++)
-			{
-				if (!(isdigit(port_addr[i])))																	 
-				{
-					if ((port_addr[i] == '\n') || (port_addr[i] == '\0'))
-					{
-						break;
-					}
-					else
-					{
-						errorcount++; 
-					}
-					
-				}
-			}
-		}
-		else
-		{
-			errorcount++;
-		}
-		if (errorcount == 0)
-		{
-			validInput = 1;
-			
-		}
-		else
-		{
-			printf("Bitte geben Sie einen validen Wert ein: \n");
-			errorcount = 0;
-			if (!strchr(port_addr, '\n'))
-			{
-				int ch;
-				while (((ch = getchar()) != EOF) && (ch != '\n'));
-			}
-		}
-	} 
-
-	if (!strchr(port_addr, '\n'))
-	{
-		int ch;
-		while (((ch = getchar()) != EOF) && (ch != '\n'));
-	}
-
+	fgets(port_addr, 5, stdin);
+	
 	char mode[2];
 	printf("Wenn Sie eine Verbindung zu einem Chatpartner herstellen wollen, dr\x81 \bcken Sie die 1.\n");
 	printf("Wenn sie warten m\x94 \bchten, bis ihr Chatpartner eine Verbindung zu Ihnen herstellt, dr\x81 \bcken Sie die 2.\n");
@@ -256,3 +210,142 @@ void messaging(SOCKET s, int mode)
 	}
 	
 }
+int isNumber(char* str) 
+{
+	while (*str) {
+		if (!isdigit(*str)) 
+		{ 
+			return 0;
+		}
+		str++; 
+	}
+	return 1;
+}
+int getValidInput(int validationMode, int* inputAddress)				//----------Programm selber validieren lassen -> Error -> Printen dass invalide -> neue Eingabe! -> Einfachere Methode?---------
+{
+	int num = 0;
+	int dots = 0;
+	switch (validationMode)
+	{
+		case 1: //IP-Adresse
+			char ip_addr[16];
+			printf("Bitte geben Sie die IP-Adresse ihres Chatpartners ein: \n");
+			fgets(ip_addr, 16, stdin);
+			char* ptr;
+			if (ip_addr == NULL)
+			{
+				break;
+			}
+			ptr = strtok(ip_addr, ".");
+			if (ptr == NULL)
+			{
+				break;
+			}
+			while (ptr)
+			{
+				if (!isNumber(ptr))
+				{
+					break;
+				}
+				num = atoi(ptr);
+				if (num >= 0 && num <=255)
+				{
+					ptr = strtok(NULL, ".");
+					if (ptr != NULL)
+					{
+						dots++;
+					}
+				}
+				else
+				{
+					break;
+				}
+			}
+			if (dots != 3)
+			{
+				printf("Eingabe war nicht valide!\n");
+				break;
+			}
+			
+			break;			
+
+		case 2: //Port
+		case 3: //Socketmode
+		default: break;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	/*while (validInput == 0);
+	{
+		fgets(port_addr, 5, stdin);
+		if (isdigit(port_addr[0]))
+		{
+			for (int i = 1; i < 5; i++)
+			{
+				if (!(isdigit(port_addr[i])))
+				{
+					if ((port_addr[i] == '\n') || (port_addr[i] == '\0'))
+					{
+						break;
+					}
+					else
+					{
+						errorcount++;
+					}
+
+				}
+			}
+		}
+		else
+		{
+			errorcount++;
+		}
+		if (errorcount == 0)
+		{
+			validInput = 1;
+
+		}
+		else
+		{
+			printf("Bitte geben Sie einen validen Wert ein: \n");
+			errorcount = 0;
+			if (!strchr(port_addr, '\n'))
+			{
+				int ch;
+				while (((ch = getchar()) != EOF) && (ch != '\n'));
+			}
+		}
+	}
+
+	if (!strchr(port_addr, '\n'))
+	{
+		int ch;
+		while (((ch = getchar()) != EOF) && (ch != '\n'));
+	}*/
+}
+
