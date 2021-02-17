@@ -64,7 +64,7 @@ int main()
 	//--------------------Socket connecten--------------------
 	if (mode[0] == '1')
 	{
-		SOCKADDR_IN client2;																						//Speicher für Infos für Zielclient 
+		SOCKADDR_IN client2;																						//Speicher fuer Infos fuer Zielclient 
 
 		memset(&client2, 0, sizeof(SOCKADDR_IN));																	//Sets the first num bytes of the block of memory pointed by ptr to 0 -> siehe cplusplus
 
