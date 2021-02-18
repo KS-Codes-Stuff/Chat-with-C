@@ -171,13 +171,13 @@ void messaging(SOCKET s, int mode)
 				while (((ch = getchar()) != EOF) && (ch != '\n'));
 			}
 			SetConsoleTextAttribute(hConsole, FOREGROUND_INTENSITY);
-			printf("Geben Sie die Nachricht ein, die Sie senden wollen: \n");
+			printf("Enter your message: \n");
 			SetConsoleTextAttribute(hConsole, saved_attributes);
 			printf("\n");
 			fgets(bufOutput, 500, stdin);
 			if (bufOutput[0] == 'b')
 			{
-				printf("Chat wurde beendet.");
+				printf("Chat has been closed.");
 				Sleep(2000);
 				break;
 			}
@@ -201,7 +201,7 @@ void messaging(SOCKET s, int mode)
 			{
 				Beep(430, 100);
 				SetConsoleTextAttribute(hConsole, FOREGROUND_INTENSITY);
-				printf("Ihr Chatpartner hat Ihnen folgende Nachricht geschickt: \n");
+				printf("They said: \n");
 				SetConsoleTextAttribute(hConsole, saved_attributes);
 				printf("\n");
 				printf("%s \n", bufInput);
@@ -210,7 +210,7 @@ void messaging(SOCKET s, int mode)
 			}
 			else if (WSAGetLastError() == 10054 || recvError == 0)
 			{
-				printf("Chat wurde vom Chatpartner beendet.");
+				printf("The chat has been closed by your partner.");
 				Sleep(2000);
 				break;
 			}
@@ -250,7 +250,7 @@ void print_err() {
 	saved_attributes = consoleInfo.wAttributes;
 
 	SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-	printf("\nEingabe war nicht valide, versuchen Sie es erneut...\n");
+	printf("\nInvalid entry, please try again...\n");
 	SetConsoleTextAttribute(hConsole, saved_attributes);
 }
 
@@ -277,7 +277,7 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 	switch (validationMode)
 	{
 		case 1: //IP-Adresse
-			printf("\nBitte geben Sie die IP-Adresse ihres Chatpartners ein:\n");
+			printf("\nPlease enter your partner's IP-adress:\n");
 			while (validInput == 0)
 			{	
 				fgets(ip_addr, MAX_IN, stdin);
@@ -335,8 +335,8 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 			break;			
 
 		case 2: //Port
-			printf("\nBitte geben Sie den Port ein, \x81 \bber den Sie chatten wollen: \n");
-			printf("Hinweis: Es werden nur die ersten vier Stellen beachtet!\n");
+			printf("\nPlease enter the port-number you want to use to chat: \n");
+			printf("(Hint: Only the first 4 characters entered are interpreted)\n");
 			while (validInput == 0)
 			{	
 				fgets(port_addr, size, stdin);
@@ -379,8 +379,8 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 			}
 			break;
 		case 3: //Socketmode
-			printf("Wenn Sie eine Verbindung zu einem Chatpartner herstellen wollen, dr\x81 \bcken Sie die 1.\n");
-			printf("Wenn sie warten m\x94 \bchten, bis ihr Chatpartner eine Verbindung zu Ihnen herstellt, dr\x81 \bcken Sie die 2.\n");
+			printf("To connect to someone else's machine, enter 1.\n");
+			printf("To wait for an incoming connection, enter 2.\n");
 			while (validInput == 0)
 			{
 				fgets(launch_mode, size, stdin);
