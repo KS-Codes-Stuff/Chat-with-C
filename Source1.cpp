@@ -13,15 +13,15 @@ void getValidInput(int validationMode, char *inputAddress, int size);
 int main()
 {	
 	//--------------------Einlesen von IP--------------------	
-	char ip_address;
+	char ip_address[17];
 	char* ip_ptr = (char*) malloc(30);
-	ip_ptr = &ip_address;							  
+	ip_ptr = &ip_address[17];							  
 	getValidInput(1, ip_ptr, 16);
 
 	//--------------------Einlesen vom Port--------------------
-	char port_addr;
+	char port_address;
 	char* port_ptr = (char*)malloc(30);
-	port_ptr = &port_addr;
+	port_ptr = &port_address;
 	getValidInput(2, port_ptr, 5);
 	
 	//--------------------Einlesen vom Socketmode--------------------
@@ -70,7 +70,7 @@ int main()
 		memset(&client2, 0, sizeof(SOCKADDR_IN));																	//Sets the first num bytes of the block of memory pointed by ptr to 0 -> siehe cplusplus
 
 		client2.sin_family = AF_INET;																				//Socketfamilie
-		client2.sin_port = htons((u_short)port_addr);																//Port
+		client2.sin_port = htons((u_short)port_address);																//Port
 		client2.sin_addr.s_addr = inet_addr(ip_ptr);															//IP-Adresse
 															
 
@@ -97,7 +97,7 @@ int main()
 		memset(&me, 0, sizeof(SOCKADDR_IN));
 
 		me.sin_family = AF_INET;
-		me.sin_port = htons((u_short)port_addr);
+		me.sin_port = htons((u_short)port_address);
 		me.sin_addr.s_addr = ADDR_ANY;
 
 		long binding = bind(client1, (SOCKADDR*)&me, sizeof(SOCKADDR_IN));
@@ -204,6 +204,12 @@ void messaging(SOCKET s, int mode)
 				Sleep(500);
 				mode = 1;
 			}
+			else if (WSAGetLastError() == 10054 || recvError == 0)
+			{
+				printf("Chat wurde vom Chatpartner beendet.");
+				Sleep(2000);
+				break;
+			}
 			else
 			{
 				printf("recv failed with error: %d\n", WSAGetLastError());
@@ -243,7 +249,7 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 	int dots = 0;
 
 	//Port-validierung
-	char port_address[MAX_IN] = "";
+	char port_addr[MAX_IN] = "";
 	int errorcount = 0;
 
 	//Launch-Mode-Validierung
@@ -295,7 +301,14 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 				{
 					for (int i = 0; i < size; i++)
 					{
-						inputAddress[i] = ip_addr[i];
+						if (ip_addr[i] == '\0')
+						{
+							inputAddress[i] = '.';
+						}
+						else
+						{
+							inputAddress[i] = ip_addr[i];
+						}
 					}
 					validInput = 1;
 				}
@@ -307,14 +320,14 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 			printf("Hinweis: Es werden nur die ersten vier Stellen beachtet!\n");
 			while (validInput == 0)
 			{	
-				fgets(port_address, size, stdin);
-				if (isdigit(port_address[0]))
+				fgets(port_addr, size, stdin);
+				if (isdigit(port_addr[0]))
 				{
 					for (int i = 1; i <= 4; i++)
 					{
-						if (!(isdigit(port_address[i])))
+						if (!(isdigit(port_addr[i])))
 						{
-							if (port_address[i] == '\0')
+							if (port_addr[i] == '\0')
 							{
 								clearBuff(size);
 								break;
@@ -334,7 +347,7 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 				{
 					for (int i = 0; i < size; i++)
 					{
-						inputAddress[i] = port_address[i];
+						inputAddress[i] = port_addr[i];
 					}
 					validInput = 1;
 				}
