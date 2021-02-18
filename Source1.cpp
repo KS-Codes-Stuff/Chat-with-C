@@ -8,26 +8,22 @@
 
 void messaging(SOCKET s, int mode);
 int isNumber(char* str);
+void print_err();
+void clearBuff();
 void getValidInput(int validationMode, char *inputAddress, int size);
 
 int main()
 {	
 	//--------------------Einlesen von IP--------------------	
-	char ip_address[17];
-	char* ip_ptr = (char*) malloc(30);
-	ip_ptr = &ip_address[17];							  
+	char* ip_ptr = (char*) malloc(30);							  
 	getValidInput(1, ip_ptr, 16);
 
 	//--------------------Einlesen vom Port--------------------
-	char port_address;
 	char* port_ptr = (char*)malloc(30);
-	port_ptr = &port_address;
 	getValidInput(2, port_ptr, 5);
 	
 	//--------------------Einlesen vom Socketmode--------------------
-	char socketMode;
 	char *launch_ptr = (char*) malloc(3);
-	launch_ptr = &socketMode;
 	getValidInput(3, launch_ptr, 2);
 
 	//--------------------Socket erstellen--------------------																																																						
@@ -70,7 +66,7 @@ int main()
 		memset(&client2, 0, sizeof(SOCKADDR_IN));																	//Sets the first num bytes of the block of memory pointed by ptr to 0 -> siehe cplusplus
 
 		client2.sin_family = AF_INET;																				//Socketfamilie
-		client2.sin_port = htons((u_short)port_address);																//Port
+		client2.sin_port = htons((u_short)'1');																//Port
 		client2.sin_addr.s_addr = inet_addr(ip_ptr);															//IP-Adresse
 															
 
@@ -97,7 +93,7 @@ int main()
 		memset(&me, 0, sizeof(SOCKADDR_IN));
 
 		me.sin_family = AF_INET;
-		me.sin_port = htons((u_short)port_address);
+		me.sin_port = htons((u_short)'1');
 		me.sin_addr.s_addr = ADDR_ANY;
 
 		long binding = bind(client1, (SOCKADDR*)&me, sizeof(SOCKADDR_IN));
@@ -161,10 +157,10 @@ void messaging(SOCKET s, int mode)
 	{
 		if (mode == 1)
 		{
+			
 			if (!strchr(bufOutput, '\n'))
 			{
-				int ch;
-				while (((ch = getchar()) != EOF) && (ch != '\n'));
+				clearBuff();
 			}
 			SetConsoleTextAttribute(hConsole, FOREGROUND_INTENSITY);
 			printf("Geben Sie die Nachricht ein, die Sie senden wollen: \n");
@@ -195,7 +191,7 @@ void messaging(SOCKET s, int mode)
 			int recvError = recv(s, bufInput, sizeof(bufInput), 0);
 			if (recvError > 0)
 			{
-				Beep(430, 100);
+				Beep(860, 200);
 				SetConsoleTextAttribute(hConsole, FOREGROUND_INTENSITY);
 				printf("Ihr Chatpartner hat Ihnen folgende Nachricht geschickt: \n");
 				SetConsoleTextAttribute(hConsole, saved_attributes);
@@ -232,7 +228,19 @@ int isNumber(char* str)
 	return 1;
 }
 
-void clearBuff(int size)
+void print_err() {
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
+	WORD saved_attributes;
+	GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
+	saved_attributes = consoleInfo.wAttributes;
+
+	SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+	printf("\nEingabe war nicht valide, versuchen Sie es erneut...\n");
+	SetConsoleTextAttribute(hConsole, saved_attributes);
+}
+
+void clearBuff()
 {
 	int ch;
 	while ((ch = getc(stdin)) != '\n' && ch != EOF);
@@ -294,7 +302,7 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 				}
 				if (dots != 3)
 				{
-					printf("Eingabe war nicht valide!\n");
+					print_err();
 					dots = 0;
 				}
 				else
@@ -329,7 +337,7 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 						{
 							if (port_addr[i] == '\0')
 							{
-								clearBuff(size);
+								clearBuff();
 								break;
 							}
 							else
@@ -353,9 +361,9 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 				}
 				else
 				{
-					printf("Eingabe war nicht valide!\n");
+					print_err();
 					errorcount = 0;
-					clearBuff(size);
+					clearBuff();
 				}
 			}
 			break;
@@ -372,13 +380,12 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 				}
 				else
 				{
-					printf("Eingabe war nicht valide!\n");
-					clearBuff(size);
+					print_err();
+					clearBuff();
 				}
 			}
 			break;
-		case 4: //message
-
+	
 		default: break;
 	}
 }
