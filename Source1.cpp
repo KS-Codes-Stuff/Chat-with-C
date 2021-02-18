@@ -12,11 +12,21 @@ void getValidInput(int validationMode, char *inputAddress, int size);
 
 int main()
 {	
-	//--------------------Einlesen von IP--------------------	
-	char ip_address[17];
-	char* ip_ptr = (char*) malloc(30);
-	ip_ptr = &ip_address[17];							  
-	getValidInput(1, ip_ptr, 16);
+
+	//--------------------Einlesen vom Socketmode--------------------
+	char socketMode;
+	char* launch_ptr = (char*)malloc(3);
+	launch_ptr = &socketMode;
+	getValidInput(3, launch_ptr, 2);
+
+	//--------------------Einlesen von IP--------------------
+	char ip_address;
+	char* ip_ptr = (char*)malloc(30);
+	ip_ptr = &ip_address;
+	if (*launch_ptr == '1') 
+	{
+		getValidInput(1, ip_ptr, 16);
+	}
 
 	//--------------------Einlesen vom Port--------------------
 	char port_address;
@@ -24,12 +34,6 @@ int main()
 	port_ptr = &port_address;
 	getValidInput(2, port_ptr, 5);
 	
-	//--------------------Einlesen vom Socketmode--------------------
-	char socketMode;
-	char *launch_ptr = (char*) malloc(3);
-	launch_ptr = &socketMode;
-	getValidInput(3, launch_ptr, 2);
-
 	//--------------------Socket erstellen--------------------																																																						
 	WORD wVersionRequested = MAKEWORD(2, 2);																	
 	WSADATA wsaData;																							
@@ -238,8 +242,23 @@ void clearBuff(int size)
 	while ((ch = getc(stdin)) != '\n' && ch != EOF);
 }
 
-void getValidInput(int validationMode, char *inputAddress, int size)				
+void print_err() {
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
+	WORD saved_attributes;
+	GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
+	saved_attributes = consoleInfo.wAttributes;
+
+	SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+	printf("\nEingabe war nicht valide, versuchen Sie es erneut...\n");
+	SetConsoleTextAttribute(hConsole, saved_attributes);
+}
+
+void getValidInput(int validationMode, char *inputAddress, int size)			
 {
+
+	//---------------------Configure Display-settings-----------------------
+
 	//While-Schleifen
 	int validInput = 0;
 
@@ -258,7 +277,7 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 	switch (validationMode)
 	{
 		case 1: //IP-Adresse
-			printf("Bitte geben Sie die IP-Adresse ihres Chatpartners ein:\n");
+			printf("\nBitte geben Sie die IP-Adresse ihres Chatpartners ein:\n");
 			while (validInput == 0)
 			{	
 				fgets(ip_addr, MAX_IN, stdin);
@@ -294,7 +313,7 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 				}
 				if (dots != 3)
 				{
-					printf("Eingabe war nicht valide!\n");
+					print_err();
 					dots = 0;
 				}
 				else
@@ -316,7 +335,7 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 			break;			
 
 		case 2: //Port
-			printf("Bitte geben Sie den Port ein, \x81 \bber den Sie chatten wollen: \n");
+			printf("\nBitte geben Sie den Port ein, \x81 \bber den Sie chatten wollen: \n");
 			printf("Hinweis: Es werden nur die ersten vier Stellen beachtet!\n");
 			while (validInput == 0)
 			{	
@@ -353,7 +372,7 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 				}
 				else
 				{
-					printf("Eingabe war nicht valide!\n");
+					print_err();
 					errorcount = 0;
 					clearBuff(size);
 				}
@@ -369,10 +388,11 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 				{
 					inputAddress[0] = launch_mode[0];
 					validInput = 1;
+					clearBuff(size);
 				}
 				else
 				{
-					printf("Eingabe war nicht valide!\n");
+					print_err();
 					clearBuff(size);
 				}
 			}
