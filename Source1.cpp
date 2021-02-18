@@ -26,7 +26,7 @@ int main()
 	
 	//--------------------Einlesen vom Socketmode--------------------
 	char socketMode;
-	char *launch_ptr;
+	char *launch_ptr = (char*) malloc(3);
 	launch_ptr = &socketMode;
 	getValidInput(3, launch_ptr, 2);
 
@@ -149,6 +149,7 @@ void messaging(SOCKET s, int mode)
 	char bufOutput[500] = "";
 	char bufInput[500] = "";
 	int end = 0;
+
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
 	WORD saved_attributes;
@@ -191,13 +192,13 @@ void messaging(SOCKET s, int mode)
 		if (mode == 2)
 		{
 			printf("\n");
-			SetConsoleTextAttribute(hConsole, FOREGROUND_INTENSITY);
-			SetConsoleTextAttribute(hConsole, saved_attributes);
 			int recvError = recv(s, bufInput, sizeof(bufInput), 0);
 			if (recvError > 0)
 			{
 				Beep(430, 100);
+				SetConsoleTextAttribute(hConsole, FOREGROUND_INTENSITY);
 				printf("Ihr Chatpartner hat Ihnen folgende Nachricht geschickt: \n");
+				SetConsoleTextAttribute(hConsole, saved_attributes);
 				printf("\n");
 				printf("%s \n", bufInput);
 				Sleep(500);
@@ -225,14 +226,13 @@ int isNumber(char* str)
 	return 1;
 }
 
-//void clearBuff(int size)
-//{
-//	int ch;
-//	while ((ch = getc(stdin)) != '\n' && ch != EOF);
-//}
+void clearBuff(int size)
+{
+	int ch;
+	while ((ch = getc(stdin)) != '\n' && ch != EOF);
+}
 
 void getValidInput(int validationMode, char *inputAddress, int size)				
-//----------Programm selber validieren lassen -> Error -> Printen dass invalide -> neue Eingabe! -> Einfachere Methode?---------
 {
 	//While-Schleifen
 	int validInput = 0;
@@ -247,7 +247,7 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 	int errorcount = 0;
 
 	//Launch-Mode-Validierung
-	char launch_mode[2] = "";
+	char launch_mode[MAX_IN] = "";
 
 	switch (validationMode)
 	{
@@ -314,8 +314,9 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 					{
 						if (!(isdigit(port_address[i])))
 						{
-							if ((port_address[i] == '\n') || (port_address[i] == '\0'))
+							if (port_address[i] == '\0')
 							{
+								clearBuff(size);
 								break;
 							}
 							else
@@ -333,16 +334,15 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 				{
 					for (int i = 0; i < size; i++)
 					{
-						//if (!strchr(port_address, '\n'))
-							inputAddress[i] = port_address[i];
+						inputAddress[i] = port_address[i];
 					}
 					validInput = 1;
 				}
 				else
 				{
-					printf("Eingabe war nicht valide! Bestaetige mit Enter...");
+					printf("Eingabe war nicht valide!\n");
 					errorcount = 0;
-					//clearBuff(size);
+					clearBuff(size);
 				}
 			}
 			break;
@@ -360,7 +360,7 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 				else
 				{
 					printf("Eingabe war nicht valide!\n");
-					//clearBuff(size);
+					clearBuff(size);
 				}
 			}
 			break;
