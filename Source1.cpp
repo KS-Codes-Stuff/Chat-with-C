@@ -4,6 +4,7 @@
 #include <winsock2.h>
 #include <ctype.h>
 #include <stdlib.h>
+#define MAX_IN 500
 
 void messaging(SOCKET s, int mode);
 int isNumber(char* str);
@@ -13,13 +14,13 @@ int main()
 {	
 	//--------------------Einlesen von IP--------------------	
 	char ip_address;
-	char *ip_ptr;
+	char* ip_ptr = (char*) malloc(30);
 	ip_ptr = &ip_address;							  
 	getValidInput(1, ip_ptr, 16);
-	
+
 	//--------------------Einlesen vom Port--------------------
 	char port_addr;
-	char *port_ptr;
+	char* port_ptr = (char*)malloc(30);
 	port_ptr = &port_addr;
 	getValidInput(2, port_ptr, 5);
 	
@@ -224,28 +225,25 @@ int isNumber(char* str)
 	return 1;
 }
 
-void clearBuff()
-{
-	char c;
-	while ((c = getchar()) != '\n' && c != EOF);
-	if (c == '\n')
-	{
-		c = '\0';
-	}
-}
+//void clearBuff(int size)
+//{
+//	int ch;
+//	while ((ch = getc(stdin)) != '\n' && ch != EOF);
+//}
 
-void getValidInput(int validationMode, char *inputAddress, int size)				//----------Programm selber validieren lassen -> Error -> Printen dass invalide -> neue Eingabe! -> Einfachere Methode?---------
+void getValidInput(int validationMode, char *inputAddress, int size)				
+//----------Programm selber validieren lassen -> Error -> Printen dass invalide -> neue Eingabe! -> Einfachere Methode?---------
 {
 	//While-Schleifen
 	int validInput = 0;
 
 	//Ip-Validierung
-	char ip_addr[16] = "";
+	char ip_addr[MAX_IN] = "";
 	int num = 0;
 	int dots = 0;
 
 	//Port-validierung
-	char port_address[5] = "";
+	char port_address[MAX_IN] = "";
 	int errorcount = 0;
 
 	//Launch-Mode-Validierung
@@ -254,12 +252,12 @@ void getValidInput(int validationMode, char *inputAddress, int size)				//------
 	switch (validationMode)
 	{
 		case 1: //IP-Adresse
-			printf("Bitte geben Sie die IP-Adresse ihres Chatpartners ein: \n");
+			printf("Bitte geben Sie die IP-Adresse ihres Chatpartners ein:\n");
 			while (validInput == 0)
-			{
-				fgets(ip_addr, 16, stdin);
+			{	
+				fgets(ip_addr, MAX_IN, stdin);
 				char* ptr;
-				if (ip_addr == NULL)
+				if (ip_addr == NULL || ip_addr[0] == '\0')
 				{
 					break;
 				}
@@ -292,7 +290,6 @@ void getValidInput(int validationMode, char *inputAddress, int size)				//------
 				{
 					printf("Eingabe war nicht valide!\n");
 					dots = 0;
-					clearBuff();
 				}
 				else
 				{
@@ -310,7 +307,6 @@ void getValidInput(int validationMode, char *inputAddress, int size)				//------
 			printf("Hinweis: Es werden nur die ersten vier Stellen beachtet!\n");
 			while (validInput == 0)
 			{	
-				clearBuff();
 				fgets(port_address, size, stdin);
 				if (isdigit(port_address[0]))
 				{
@@ -344,8 +340,9 @@ void getValidInput(int validationMode, char *inputAddress, int size)				//------
 				}
 				else
 				{
-					printf("Bitte geben Sie einen validen Wert ein: \n");
+					printf("Eingabe war nicht valide! Bestaetige mit Enter...");
 					errorcount = 0;
+					//clearBuff(size);
 				}
 			}
 			break;
@@ -354,16 +351,16 @@ void getValidInput(int validationMode, char *inputAddress, int size)				//------
 			printf("Wenn sie warten m\x94 \bchten, bis ihr Chatpartner eine Verbindung zu Ihnen herstellt, dr\x81 \bcken Sie die 2.\n");
 			while (validInput == 0)
 			{
-				fgets(port_address, size, stdin);
-				if (port_address[0] == '1' || port_address[0] == '2')
+				fgets(launch_mode, size, stdin);
+				if (launch_mode[0] == '1' || launch_mode[0] == '2')
 				{
-					inputAddress[0] = port_address[0];
+					inputAddress[0] = launch_mode[0];
 					validInput = 1;
 				}
 				else
 				{
-					printf("Bitte geben Sie einen validen Wert ein: \n");
-					clearBuff();
+					printf("Eingabe war nicht valide!\n");
+					//clearBuff(size);
 				}
 			}
 			break;
