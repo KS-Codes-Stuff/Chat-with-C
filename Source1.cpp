@@ -85,6 +85,7 @@ int main()
 		else
 		{
 			printf("Connected with %s \n", ip_ptr);
+			printf("If your input-portnumber was less then 4 Chars, then press Enter to continue....");
 			messaging(client1, 1);
 		}
 	}
@@ -134,6 +135,7 @@ int main()
 		else
 		{
 			printf("New Connection accepted! \n");
+			printf("If your input-portnumber was less then 4 Chars, then press Enter to continue....");
 			messaging(enableConnection, 2);
 		}
 	}
@@ -156,8 +158,7 @@ void messaging(SOCKET s, int mode)
 
 	GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
 	saved_attributes = consoleInfo.wAttributes;
-
-	
+	clearBuff();
 	while (true)
 	{
 		if (mode == 1)
@@ -167,7 +168,7 @@ void messaging(SOCKET s, int mode)
 			SetConsoleTextAttribute(hConsole, saved_attributes);
 			printf("\n");
 			fgets(bufOutput, 500, stdin);
-			if (bufOutput[0] == 'b')
+			if (bufOutput[0] == 'y')
 			{
 				printf("Chat has been closed.");
 				Sleep(2000);
@@ -345,8 +346,12 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 						{
 							if (port_addr[i] == '\0')
 							{
-								clearBuff();
+								//clearBuff();
 								break;
+							}
+							else if (port_addr[i] == '\n')
+							{
+								port_addr[i] = '\0';
 							}
 							else
 							{
