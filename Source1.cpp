@@ -8,12 +8,13 @@
 
 void messaging(SOCKET s, int mode);
 int isNumber(char* str);
+
+void print_err();
 void clearBuff();
 void getValidInput(int validationMode, char *inputAddress, int size);
 
 int main()
 {	
-
 	//--------------------Einlesen vom Socketmode--------------------
 	char* launch_ptr = (char*)malloc(3);
 	getValidInput(3, launch_ptr, 2);
@@ -25,11 +26,13 @@ int main()
 		getValidInput(1, ip_ptr, 16);
 	}
 
+
 	//--------------------Einlesen vom Port--------------------
 	char* port_ptr = (char*)malloc(30);
 	getValidInput(2, port_ptr, 5);
 	char port_address = *port_ptr;
 	
+
 	//--------------------Socket erstellen--------------------																																																						
 	WORD wVersionRequested = MAKEWORD(2, 2);																	
 	WSADATA wsaData;																							
@@ -71,8 +74,7 @@ int main()
 
 		client2.sin_family = AF_INET;																				//Socketfamilie
 		client2.sin_port = htons((u_short)port_address);																        //Port
-		client2.sin_addr.s_addr = inet_addr(ip_ptr);															    //IP-Adresse
-															
+		client2.sin_addr.s_addr = inet_addr(ip_ptr);															    //IP-Adresse											
 
 		long connection = connect(client1, (SOCKADDR*)&client2, sizeof(sockaddr_in));
 
@@ -98,7 +100,7 @@ int main()
 		memset(&me, 0, sizeof(SOCKADDR_IN));
 
 		me.sin_family = AF_INET;
-		me.sin_port = htons((u_short)port_address);
+		me.sin_port = htons((u_short)'1');
 		me.sin_addr.s_addr = ADDR_ANY;
 
 		long binding = bind(client1, (SOCKADDR*)&me, sizeof(SOCKADDR_IN));
@@ -346,7 +348,6 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 						{
 							if (port_addr[i] == '\0')
 							{
-								//clearBuff();
 								break;
 							}
 							else if (port_addr[i] == '\n')
@@ -399,8 +400,7 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 				}
 			}
 			break;
-		case 4: //message
-
+	
 		default: break;
 	}
 }
