@@ -8,31 +8,27 @@
 
 void messaging(SOCKET s, int mode);
 int isNumber(char* str);
+void clearBuff();
 void getValidInput(int validationMode, char *inputAddress, int size);
 
 int main()
 {	
 
 	//--------------------Einlesen vom Socketmode--------------------
-	char socketMode;
 	char* launch_ptr = (char*)malloc(3);
-	launch_ptr = &socketMode;
 	getValidInput(3, launch_ptr, 2);
 
 	//--------------------Einlesen von IP--------------------
-	char ip_address;
 	char* ip_ptr = (char*)malloc(30);
-	ip_ptr = &ip_address;
 	if (*launch_ptr == '1') 
 	{
 		getValidInput(1, ip_ptr, 16);
 	}
 
 	//--------------------Einlesen vom Port--------------------
-	char port_address;
 	char* port_ptr = (char*)malloc(30);
-	port_ptr = &port_address;
 	getValidInput(2, port_ptr, 5);
+	char port_address = *port_ptr;
 	
 	//--------------------Socket erstellen--------------------																																																						
 	WORD wVersionRequested = MAKEWORD(2, 2);																	
@@ -74,8 +70,8 @@ int main()
 		memset(&client2, 0, sizeof(SOCKADDR_IN));																	//Sets the first num bytes of the block of memory pointed by ptr to 0 -> siehe cplusplus
 
 		client2.sin_family = AF_INET;																				//Socketfamilie
-		client2.sin_port = htons((u_short)port_address);																//Port
-		client2.sin_addr.s_addr = inet_addr(ip_ptr);															//IP-Adresse
+		client2.sin_port = htons((u_short)port_address);																        //Port
+		client2.sin_addr.s_addr = inet_addr(ip_ptr);															    //IP-Adresse
 															
 
 		long connection = connect(client1, (SOCKADDR*)&client2, sizeof(sockaddr_in));
@@ -88,7 +84,7 @@ int main()
 		}
 		else
 		{
-			printf("Connected with %s\n", ip_ptr);
+			printf("Connected with %s \n", ip_ptr);
 			messaging(client1, 1);
 		}
 	}
@@ -161,15 +157,11 @@ void messaging(SOCKET s, int mode)
 	GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
 	saved_attributes = consoleInfo.wAttributes;
 
+	
 	while (true)
 	{
 		if (mode == 1)
 		{
-			if (!strchr(bufOutput, '\n'))
-			{
-				int ch;
-				while (((ch = getchar()) != EOF) && (ch != '\n'));
-			}
 			SetConsoleTextAttribute(hConsole, FOREGROUND_INTENSITY);
 			printf("Enter your message: \n");
 			SetConsoleTextAttribute(hConsole, saved_attributes);
@@ -236,7 +228,7 @@ int isNumber(char* str)
 	return 1;
 }
 
-void clearBuff(int size)
+void clearBuff()
 {
 	int ch;
 	while ((ch = getc(stdin)) != '\n' && ch != EOF);
@@ -324,6 +316,11 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 						{
 							inputAddress[i] = '.';
 						}
+						else if (ip_addr[i] == '\n')
+						{
+							inputAddress[i] = '\0';
+							break;
+						}
 						else
 						{
 							inputAddress[i] = ip_addr[i];
@@ -348,7 +345,7 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 						{
 							if (port_addr[i] == '\0')
 							{
-								clearBuff(size);
+								clearBuff();
 								break;
 							}
 							else
@@ -374,7 +371,7 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 				{
 					print_err();
 					errorcount = 0;
-					clearBuff(size);
+					clearBuff();
 				}
 			}
 			break;
@@ -388,12 +385,12 @@ void getValidInput(int validationMode, char *inputAddress, int size)
 				{
 					inputAddress[0] = launch_mode[0];
 					validInput = 1;
-					clearBuff(size);
+					clearBuff();
 				}
 				else
 				{
 					print_err();
-					clearBuff(size);
+					clearBuff();
 				}
 			}
 			break;
